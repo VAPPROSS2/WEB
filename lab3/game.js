@@ -30,10 +30,10 @@ const dialog=make('section','',{className:'dialog','aria-modal':'true',role:'dia
 overlay.append(dialog);document.body.append(overlay);
 const STORAGE='web-lab3-2048-v1',LEADERS='web-lab3-2048-leaders-v1';
 let state={grid:Array(16).fill(0),score:0,best:0,over:false,screen:'game'};
-let previous=null,leaders=[];
-try{const s=JSON.parse(localStorage.getItem(STORAGE)||'null');if(s&&Array.isArray(s.grid)&&s.grid.length===16&&s.grid.every(n=>Number.isInteger(n)&&n>=0)){state={...state,...s,screen:'game'};state.over=!!s.over;}}catch(e){console.warn('Не удалось загрузить игру',e)}
+let previous=null,leaders=[],hasSavedGame=false,savedPrevious=null;
+try{const s=JSON.parse(localStorage.getItem(STORAGE)||'null');if(s&&Array.isArray(s.grid)&&s.grid.length===16&&s.grid.every(n=>Number.isInteger(n)&&n>=0)){state={...state,...s,screen:'game'};state.over=!!s.over;hasSavedGame=true;savedPrevious=s.previous||null;}}catch(e){console.warn('Не удалось загрузить игру',e)}
 try{const l=JSON.parse(localStorage.getItem(LEADERS)||'[]');if(Array.isArray(l))leaders=l.filter(x=>x&&typeof x.name==='string'&&Number.isFinite(x.score)).slice(0,10)}catch(e){console.warn('Не удалось загрузить рекорды',e)}
-function persist(){try{localStorage.setItem(STORAGE,JSON.stringify({grid:state.grid,score:state.score,best:state.best,over:state.over}))}catch(e){console.warn('Не удалось сохранить игру',e)}}
+function persist(){try{localStorage.setItem(STORAGE,JSON.stringify({grid:state.grid,score:state.score,best:state.best,over:state.over,previous}))}catch(e){console.warn('Не удалось сохранить игру',e)}}
 function saveLeaders(){try{localStorage.setItem(LEADERS,JSON.stringify(leaders))}catch(e){alert('Не удалось сохранить таблицу рекордов в браузере.')}}
 function randomTile(){const free=[];state.grid.forEach((v,i)=>{if(!v)free.push(i)});if(!free.length)return;const index=free[Math.floor(Math.random()*free.length)];state.grid[index]=Math.random()<.9?2:4}
 function startGame(){state.grid=Array(16).fill(0);state.score=0;state.over=false;state.screen='game';previous=null;const count=1+Math.floor(Math.random()*3);for(let i=0;i<count;i++)randomTile();persist();render()}
@@ -99,4 +99,4 @@ boardWrap.addEventListener('touchend',e=>{if(!touchStart)return;const t=e.change
 leadersBtn.addEventListener('click',showLeaders);
 restartBtn.addEventListener('click',startGame);
 const undoBtn=make('button','Отменить ход',{className:'btn light',type:'button'});undoBtn.addEventListener('click',undo);topActions.prepend(undoBtn);
-startGame();
+if(hasSavedGame){previous=savedPrevious&&Array.isArray(savedPrevious.grid)&&savedPrevious.grid.length===16?savedPrevious:null;render()}else startGame();
