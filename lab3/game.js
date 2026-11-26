@@ -36,7 +36,7 @@ try{const l=JSON.parse(localStorage.getItem(LEADERS)||'[]');if(Array.isArray(l))
 function persist(){try{localStorage.setItem(STORAGE,JSON.stringify({grid:state.grid,score:state.score,best:state.best,over:state.over,previous}))}catch(e){console.warn('Не удалось сохранить игру',e)}}
 function saveLeaders(){try{localStorage.setItem(LEADERS,JSON.stringify(leaders))}catch(e){alert('Не удалось сохранить таблицу рекордов в браузере.')}}
 function randomTile(){const free=[];state.grid.forEach((v,i)=>{if(!v)free.push(i)});if(!free.length)return;const index=free[Math.floor(Math.random()*free.length)];state.grid[index]=Math.random()<.9?2:4}
-function startGame(){state.grid=Array(16).fill(0);state.score=0;state.over=false;state.screen='game';previous=null;const count=1+Math.floor(Math.random()*3);for(let i=0;i<count;i++)randomTile();persist();render()}
+function startGame(){state.grid=Array(16).fill(0);state.score=0;state.over=false;state.screen='game';previous=null;const count=1+Math.floor(Math.random()*3);for(let i=0;i<count;i++)randomTile();persist();drawAnimated()}
 function snapshot(){return {grid:state.grid.slice(),score:state.score,best:state.best,over:state.over}}
 function drawAnimated(){if(document.startViewTransition)document.startViewTransition(()=>render());else render()}
 function render(){
