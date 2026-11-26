@@ -48,3 +48,10 @@ h1{font-size:clamp(48px,12vw,76px);line-height:1;margin:0;font-weight:900;letter
 .hidden{display:none!important}
 @media(max-width:600px){.app{margin:20px auto 32px}.topline{align-items:flex-start;flex-direction:column}.top-actions{width:100%}.top-actions .btn{flex:1}.intro{align-items:flex-start;flex-direction:column}.mobile-controls{display:grid}.help{margin-top:14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+.board-wrap{view-transition-name:game-board}
+::view-transition-old(game-board),::view-transition-new(game-board){animation-duration:180ms}
+::view-transition-old(game-board){animation-name:board-fade-out}
+::view-transition-new(game-board){animation-name:board-fade-in}
+@keyframes board-fade-out{to{opacity:.65;transform:scale(.985)}}
+@keyframes board-fade-in{from{opacity:.65;transform:scale(1.015)}to{opacity:1;transform:scale(1)}}
