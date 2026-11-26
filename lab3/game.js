@@ -1,12 +1,12 @@
 'use strict';
 const make=(tag,text='',props={})=>{const n=document.createElement(tag);n.textContent=text;Object.assign(n,props);return n};
 const root=make('main','',{className:'app'});
-const top=make('header','',{className:'topline'});
+const topBar=make('header','',{className:'topline'});
 const heading=make('h1','2048');
 const topActions=make('div','',{className:'top-actions'});
 const leadersBtn=make('button','Таблица лидеров',{className:'btn light',type:'button'});
 const restartBtn=make('button','Новая игра',{className:'btn',type:'button'});
-topActions.append(leadersBtn,restartBtn);top.append(heading,topActions);
+topActions.append(leadersBtn,restartBtn);topBar.append(heading,topActions);
 const intro=make('section','',{className:'intro'});
 intro.append(make('p','Соединяйте одинаковые числа и набирайте очки.'));
 const scores=make('div','',{className:'scores'});
@@ -24,7 +24,7 @@ for(const [dir,txt,cls] of [['up','↑','up'],['left','←','left'],['down','↓
  const b=make('button',txt,{type:'button',className:cls});b.setAttribute('aria-label',({up:'Вверх',down:'Вниз',left:'Влево',right:'Вправо'})[dir]);b.addEventListener('click',()=>move(dir));mobile.append(b);
 }
 const help=make('p','Управление: стрелки на клавиатуре или кнопки на экране. Объединяйте одинаковые плитки. Можно отменить последний ход.',{className:'help'});
-root.append(top,intro,boardWrap,mobile,help);document.body.append(root);
+root.append(topBar,intro,boardWrap,mobile,help);document.body.append(root);
 const overlay=make('div','',{className:'overlay hidden'});
 const dialog=make('section','',{className:'dialog','aria-modal':'true',role:'dialog','aria-labelledby':'dialog-title'});
 overlay.append(dialog);document.body.append(overlay);
