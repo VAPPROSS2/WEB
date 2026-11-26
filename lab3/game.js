@@ -82,7 +82,7 @@ function showGameOver(){
  const save=make('button','Сохранить результат',{className:'btn',type:'submit'});
  form.append(name,save);
  form.addEventListener('submit',e=>{e.preventDefault();const value=name.value.trim();if(!value){name.focus();return}leaders.push({name:value,score:state.score,date:new Date().toISOString()});leaders.sort((a,b)=>b.score-a.score||a.date.localeCompare(b.date));leaders=leaders.slice(0,10);saveLeaders();showSaved();});
- const actions=make('div','',{className:'dialog-actions'});actions.append(restartButton.cloneNode(true));actions.lastChild.addEventListener('click',startGame);
+ const actions=make('div','',{className:'dialog-actions'});actions.append(restartBtn.cloneNode(true));actions.lastChild.addEventListener('click',startGame);
  dialog.append(form,actions);
 }
 function showSaved(){dialog.replaceChildren(make('h2','Ваш рекорд сохранён',{id:'dialog-title'}),make('p','Результат '+state.score+' очков добавлен в таблицу лидеров.'));const actions=make('div','',{className:'dialog-actions'});const view=make('button','Посмотреть лидеров',{className:'btn light',type:'button'});view.addEventListener('click',showLeaders);const again=make('button','Начать заново',{className:'btn',type:'button'});again.addEventListener('click',startGame);actions.append(view,again);dialog.append(actions)}
