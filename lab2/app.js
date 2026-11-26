@@ -97,6 +97,52 @@ function button(text, action) {
   node.addEventListener('click',action);
   return node;
 }
+// Reorder only the visible tasks, preserving hidden task positions.
+let dragged = null;
+function moveTask(source, target, after) {
+  if (source === target || sort.value !== 'manual') return;
+  const ids = visibleTasks().map(t=>t.id);
+  if (!ids.includes(source) || !ids.includes(target)) return;
+  ids.splice(ids.indexOf(source),1);
+  ids.splice(ids.indexOf(target)+(after?1:0),0,source);
+  const byId = new Map(tasks.map(t=>[t.id,t]));
+  const visibleIds = new Set(ids);
+  let i = 0;
+  tasks = tasks.map(t=>visibleIds.has(t.id)?byId.get(ids[i++]):t);
+  save();render();
+}
+function attachDrag(row, task) {
+  const handle = el('span','⠿',{className:'handle',draggable:true,title:'Перетащить задачу'});
+  handle.setAttribute('aria-hidden','true');
+  row.prepend(handle);
+  handle.addEventListener('dragstart',event=>{
+    dragged=task.id;
+    event.dataTransfer.effectAllowed='move';
+    event.dataTransfer.setData('text/plain',task.id);
+    row.classList.add('dragging');
+  });
+  handle.addEventListener('dragend',()=>{
+    dragged=null;
+    for(const item of list.children) item.classList.remove('dragging','drag-over');
+  });
+  row.addEventListener('dragover',event=>{
+    if (!dragged || dragged===task.id) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect='move';
+    row.classList.add('drag-over');
+  });
+  row.addEventListener('dragleave',event=>{
+    if(!row.contains(event.relatedTarget)) row.classList.remove('drag-over');
+  });
+  row.addEventListener('drop',event=>{
+    if (!dragged) return;
+    event.preventDefault();
+    const rect=row.getBoundingClientRect();
+    const source=dragged;
+    dragged=null;
+    moveTask(source,task.id,event.clientY>rect.top+rect.height/2);
+  });
+}
 function render() {
   const visible = visibleTasks();
   list.replaceChildren();
@@ -121,6 +167,17 @@ function render() {
       save();render();
     }));
     row.append(check,body,actions);
+    if (sort.value === 'manual') {
+      attachDrag(row,task);
+      const index = visible.indexOf(task);
+      const up = button('↑',()=>moveTask(task.id,visible[index-1].id,false));
+      const down = button('↓',()=>moveTask(task.id,visible[index+1].id,true));
+      up.disabled=index===0;
+      down.disabled=index===visible.length-1;
+      up.setAttribute('aria-label','Переместить выше');
+      down.setAttribute('aria-label','Переместить ниже');
+      actions.prepend(up,down);
+    }
     list.append(row);
   }
 }
