@@ -38,6 +38,7 @@ function saveLeaders(){try{localStorage.setItem(LEADERS,JSON.stringify(leaders))
 function randomTile(){const free=[];state.grid.forEach((v,i)=>{if(!v)free.push(i)});if(!free.length)return;const index=free[Math.floor(Math.random()*free.length)];state.grid[index]=Math.random()<.9?2:4}
 function startGame(){state.grid=Array(16).fill(0);state.score=0;state.over=false;state.screen='game';previous=null;const count=1+Math.floor(Math.random()*3);for(let i=0;i<count;i++)randomTile();persist();render()}
 function snapshot(){return {grid:state.grid.slice(),score:state.score,best:state.best,over:state.over}}
+function drawAnimated(){if(document.startViewTransition)document.startViewTransition(()=>render());else render()}
 function render(){
  scoreValue.textContent=state.score;bestValue.textContent=state.best;
  tilesLayer.replaceChildren();
@@ -65,8 +66,8 @@ function move(dir){
  if(next.every((v,i)=>v===state.grid[i]))return;
  previous=snapshot();state.grid=next;state.score+=gained;state.best=Math.max(state.best,state.score);
  const spawns=1+Math.floor(Math.random()*2);for(let i=0;i<spawns;i++)randomTile();
- if(!hasMoves()){state.over=true;persist();render();return}
- persist();render();
+ if(!hasMoves()){state.over=true;persist();drawAnimated();return}
+ persist();drawAnimated();
 }
 function undo(){
  if(!previous||state.over||state.screen!=='game')return;
